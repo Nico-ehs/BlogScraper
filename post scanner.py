@@ -8,17 +8,28 @@ from operator import itemgetter
 import time
 import os
 
+
+def extract_urls(text):
+    # regex for extrating urls for html sourse code
+    url_re='<a href="?\'?([^"\'>]*)'
+    urls=re.findall(url_re,text)
+    return urls
+
 class site_data():
     def __init__(self, sitename, site_url, link_extractor):
+        # initlizes class with the passed in sitename and link_extractor. Sets fisrt
+        # unscanned page at site_url
         self.sitename=sitename
         self.pages=[]
         self.pagelist=[]
         self.link_extractor=link_extractor
         self.unscanned_pages=[site_url]
     def get_links(self,page):
+        # returns new links from page
         links=remove_multiple(self.link_extractor(page.text))
         return [x for x in links if (x not in (self.pagelist+self.unscanned_pages))]
     def scan_page(self):
+        # scans the next unscanned_pages url
         page=requests.get(self.unscanned_pages[0])
         print(page.url)
         self.pages.append(page)
@@ -26,24 +37,15 @@ class site_data():
         self.unscanned_pages.extend(self.get_links(page))
         self.unscanned_pages=self.unscanned_pages[1:]
     def full_scan(self):
-        print("test1.5")
-        while self.unscanned_pages != [] and len(self.pages) <= 20:
-            # print('pagelist=')
-            # print(str(self.pagelist))
-            # # print('unsscanned pages=')
-            # print(str(self.unscanned_pages))
+        # scans pages until self.unscanned_pages != [] and len(self.pages) <= 5 o
+        while self.unscanned_pages != [] and len(self.pages) <= 5:
             self.scan_page()
-        #     # print('pagelist=')
-        #     print(str(self.pagelist))
-        #     # print('unsscanned pages=')
-        #     print(str(self.unscanned_pages))
-        print(str(self.unscanned_pages))
+            print(str(self.unscanned_pages))
     def output(self):
         r=[self.pages]
         return r
     def save_output(self):
         make_site_dir_1(self.sitename)
-        # self.page_filter
         for x in self.pages:
             save_page(x.text, x.url, self.sitename)
         path='/site data/'+self.sitename
@@ -51,13 +53,6 @@ class site_data():
         return 1
     def page_filter(self):
         self.pages.remove(self.sitename)
-    def load_data(scanned_pages, unscanned_pages):
-        self.pagelist=
-        self.unscanned_pages=[site_url]
-
-
-
-
 
 
 def remove_multiple(list_in):
@@ -67,15 +62,15 @@ def remove_multiple(list_in):
             r.append(x)
     return r
 
-def add_new(list_1,list_2):
-    t1=time.time()
-    r=list_1
-    for x in list_2:
-        if x not in r:
-            r.append(x)
-    t2=time.time()
-    print(str(t2-t1))
-    return r
+# def add_new(list_1,list_2):
+#     t1=time.time()
+#     r=list_1
+#     for x in list_2:
+#         if x not in r:
+#             r.append(x)
+#     t2=time.time()
+#     print(str(t2-t1))
+#     return r
 
 
 
@@ -94,7 +89,6 @@ def load_file(filename,path):
     m_dir=os.getcwd()
     os.chdir(m_dir+path)
     f_in=open(filename, "r").read
-    f_out.close
     os.chdir(m_dir)
     return f_in
 
@@ -191,13 +185,12 @@ def linktest_esr(link):
     return r
 
 def link_fn_twig(text):
-    links=extract_links.extract_m(text)
-    print("test2")
+    links=extract_urls(text)
     vaild_links=[x for x in links if linktest_twig(x)==1]
     return vaild_links
     
 def link_fn_esr(text):
-    links=extract_links.extract_m(text)
+    links=extract_urls(text)
     vaild_links=[x for x in links if linktest_esr(x)==1]
     return vaild_links
     
