@@ -1,80 +1,4 @@
-import os
-import file_fns
-
-class site_parser():
-    def __init__(self,sitename,fn_s_post,fn_s_commets):
-        self.sitename=sitename
-        self.fn_s_post=fn_s_post
-        self.fn_s_commets=fn_s_commets
-        self.posts=[]
-        self.comments=[]
-        self.pagelist=[]
-    def scan_page(self,text):
-        post=entry_parser(get_post(text),self.fn_s_post,post_data).output
-        post[0]=[self.sitename]+post[0]
-        new_comments=entry_parser(get_comments(text),self.fn_s_commets,comment_data).output
-        # print(str(new_comments)[:50])
-        for x in range(len(new_comments)):
-            new_comments[x]=[self.sitename,post[0][2]]+new_comments[x]
-        # print(str(new_comments)[:50])
-        self.posts+=post
-        print(len(self.posts))
-        self.comments+=new_comments
-        print(len(self.comments))
-    # def load_pagelist(self):
-    #     m_dir=os.getcwd()
-    #     os.chdir(m_dir+'/site data/'+self.sitename+'/html data')
-    #     self.pagelist=os.listdir(os.getcwd())
-    #     os.chdir(m_dir)
-    def full_scan(self):
-        self.pagelist=file_fns.load_pagelist(self.sitename)
-        m_dir=os.getcwd()
-        for x in self.pagelist:
-            page=file_fns.load_file(x,'/site data/'+self.sitename+'/html data')
-            self.scan_page(page)
-        self.save_data()
-    def save_data(self):
-        file_fns.save_file("posts.txt",str(self.posts),'/site data/'+self.sitename)
-        file_fns.save_file("comments.txt",str(self.comments),'/site data/'+self.sitename)
-        
-
-
-
-class entry_parser():
-    def __init__(self,data,fn_s,entry_class):
-        self.entries=[]
-        self.output=[]
-        for x in data:
-            self.entries+=[entry_class(x,fn_s)]
-            self.output+=[self.entries[-1].output()]
-
-
-class post_data():
-    def __init__(self,data,fn_s):
-        self.title=fn_s[0](data)
-        self.html_id=fn_s[1](data)
-        self.date=fn_s[2](data)
-        self.author=fn_s[3](data)
-        self.text=fn_s[4](data)
-    def output(self):
-        r=[self.html_id,self.title,self.author,self.date,self.text]
-        return r
-
-
-class comment_data():
-    def __init__(self,data,fn_s):
-        self.author=fn_s[0](data).replace('\n','').replace('\t','')
-        self.date=fn_s[1](data)
-        self.depth=fn_s[2](data)
-        self.text=fn_s[3](data)
-        self.html_id=fn_s[4](data)
-    def output(self):
-        r=[self.html_id,self.author,self.date,self.depth,self.text]
-        return r
-
-    
 ##site=[[url,linktest_1],[fn_2,[get_fn1(e1[0],e1[1]),get_fn1(e2[0],e2[1]),get_fn1(e3[0],e3[1]),get_fn1(e4[0],e4[1])]]]
-
 
 
 def multi_selection(text,start,end):
@@ -121,7 +45,6 @@ def remove_tags(text):
 
 
 
-
 def get_post(text):
     r=1
     s='<article id="post'
@@ -135,7 +58,6 @@ def get_comments(text):
     e='<div class="reply">'
     r=multi_selection(text,s,e)
     return r
-
 
 def selection_fn_gen(s,e):
     r = lambda x: remove_tags(selection(x,s,e))
@@ -214,28 +136,3 @@ wordpress_functions_comments_1=[fn1,
 
 fns_1=wordpress_functions_comments_1
 fns_2=wordpress_functions_post_1
-
-# t1=open("Taking Root 1.1 _ Twig.htm", "r", encoding='utf-8').read()
-# t2=entry_parser(get_comments(t1),fns_1,comment)
-# print(t2.output[5])
-# open("comment_test1.html", "w", encoding='utf-8').write(str(t2.output))
-# open("post_test1.html", "w", encoding='utf-8').write(str(post(get_post(t1),fns_2).output()))
-
-
-
-
-
-
-# def esr_funtions:
-# parser=site_parser("twig",fns_2,fns_1)
-# parser.full_scan()
-
-
-# fns_1[0]=no_tags_selection_fn_gen('<div class="comment-author vcard">',
-#                              '</span> on')
-                             
-# fns_1[1]=selection_fn_gen('<time pubdate datetime="', '">')
-                        
-# parser=site_parser("ESR",fns_2,fns_1)
-# parser.full_scan()
-
