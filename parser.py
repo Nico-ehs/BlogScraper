@@ -27,6 +27,7 @@ class site_parser():
     #     self.pagelist=os.listdir(os.getcwd())
     #     os.chdir(m_dir)
     def full_scan(self):
+        # saves the html pages to files in sitedata folder
         self.pagelist=file_fns.load_pagelist(self.sitename)
         m_dir=os.getcwd()
         for x in self.pagelist:
@@ -34,6 +35,7 @@ class site_parser():
             self.scan_page(page)
         self.save_data()
     def save_data(self):
+        
         file_fns.save_file("posts.txt",str(self.posts),'/site data/'+self.sitename)
         file_fns.save_file("comments.txt",str(self.comments),'/site data/'+self.sitename)
         

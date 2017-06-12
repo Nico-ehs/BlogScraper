@@ -1,15 +1,8 @@
 ##site=[[url,linktest_1],[fn_2,[get_fn1(e1[0],e1[1]),get_fn1(e2[0],e2[1]),get_fn1(e3[0],e3[1]),get_fn1(e4[0],e4[1])]]]
 
 
-def multi_selection(text,start,end):
-    r1=text.split(start)
-    r1=r1[1:]
-    r=[]
-    for x in range(len(r1)):
-        r=r+[r1[x].split(end)[0]]
-    return r
-    
 def selection(text,start,end):
+    # returns the first instance of a substring bordered by start and end
     r=''
     r1=text.split(start,1)
     if len(r1)==2:
@@ -19,10 +12,23 @@ def selection(text,start,end):
     return r
 
 
+def multi_selection(text,start,end):
+    #returns all instances of of a substring bordered by start and end
+    r1=text.split(start)
+    r1=r1[1:]
+    r=[]
+    for x in range(len(r1)):
+        r=r+[r1[x].split(end)[0]]
+    return r
+    
+
+
+
 
 
 
 def remove_tags(text):
+    # removes html tags from a string
     for x in range(len(text)):
         if text[x]=='>' or text[x]=='<':
             if text[x]=='>':
@@ -46,6 +52,7 @@ def remove_tags(text):
 
 
 def get_post(text):
+    # extracts a string with the post data from the html page
     r=1
     s='<article id="post'
     e='</article><!-- #post-## -->'
@@ -53,6 +60,7 @@ def get_post(text):
     return [r]
 
 def get_comments(text):
+    # extracts strings with the comment data from the html page
     r=1
     s='<li class="comment'
     e='<div class="reply">'
@@ -134,5 +142,32 @@ wordpress_functions_comments_1=[fn1,
                                 fn4,
                                 fn5]
 
-fns_1=wordpress_functions_comments_1
-fns_2=wordpress_functions_post_1
+# fns_1=wordpress_functions_comments_1
+# fns_2=wordpress_functions_post_1
+
+def fns_1():
+    fn1=no_tags_selection_fn_gen('<div class="comment-author vcard">',
+                             '</cite> |')
+    # fn2 date
+    fn2=double_selection_fn_gen('<span class="comment-meta commentmetadata">',
+                            '</time>',
+                            'datetime="',
+                            '">')
+    # fn3 depth
+    fn3=double_selection_fn_gen('depth',
+                                'id="li-comment',
+                            '-',
+                            ' ')
+    # fn4 text
+    fn4=no_tags_selection_fn_gen('<div class="comment-content">',
+                                 '</div>')
+    # fn5 html id
+    fn5=selection_fn_gen('<article id="comment-',
+                         '" class="comment">')
+    return 
+
+def fns_2():
+    return 1
+    
+    
+    
