@@ -17,7 +17,7 @@ def load_file(filename,path):
     # Loads file as string
     m_dir=os.getcwd()
     os.chdir(m_dir+path)
-    f_in=open(filename, "r").read
+    f_in=open(filename, "r").read()
     os.chdir(m_dir)
     return f_in
 
@@ -90,6 +90,7 @@ def get_sitelist():
     
 def load_pagelist(sitename):
     # loads the lists of files in the html data directory for site
-    m_dir=os.getcwd()
-    os.chdir(m_dir+'/site data/'+sitename+'/html data')
-    return os.listdir(os.getcwd())
+    # m_dir=os.getcwd()
+    # os.chdir(m_dir+'/site data/'+sitename+'/html data')
+    # return os.listdir(os.getcwd())
+    return os.listdir(os.getcwd()+'/site data/'+sitename+'/html data')

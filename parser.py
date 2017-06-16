@@ -1,5 +1,6 @@
 import os
 import file_fns
+import parse_fns
 
 class site_parser():
     def __init__(self,sitename,fn_s_post,fn_s_commets):
@@ -8,8 +9,9 @@ class site_parser():
         self.fn_s_commets=fn_s_commets
         self.posts=[]
         self.comments=[]
-        self.pagelist=[]
+        # self.pagelist=[]
     def scan_page(self,text):
+        # Extracts the post and comments from the page html source.
         post=entry_parser(get_post(text),self.fn_s_post,post_data).output
         post[0]=[self.sitename]+post[0]
         new_comments=entry_parser(get_comments(text),self.fn_s_commets,comment_data).output
@@ -27,13 +29,14 @@ class site_parser():
     #     self.pagelist=os.listdir(os.getcwd())
     #     os.chdir(m_dir)
     def full_scan(self):
+        print(os.getcwd())
         # saves the html pages to files in sitedata folder
         self.pagelist=file_fns.load_pagelist(self.sitename)
         m_dir=os.getcwd()
         for x in self.pagelist:
             page=file_fns.load_file(x,'/site data/'+self.sitename+'/html data')
             self.scan_page(page)
-        self.save_data()
+        # self.save_data()
     def save_data(self):
         
         file_fns.save_file("posts.txt",str(self.posts),'/site data/'+self.sitename)
@@ -43,6 +46,7 @@ class site_parser():
 
 
 class entry_parser():
+    # Parses out list of strings into entry_class output based on input funtions.
     def __init__(self,data,fn_s,entry_class):
         self.entries=[]
         self.output=[]
@@ -52,6 +56,7 @@ class entry_parser():
 
 
 class post_data():
+    # Parses a post data string into title, html_id, date, author, and text.
     def __init__(self,data,fn_s):
         self.title=fn_s[0](data)
         self.html_id=fn_s[1](data)
@@ -64,6 +69,7 @@ class post_data():
 
 
 class comment_data():
+    # Parses a post data string into title, html_id, date, author, and text.
     def __init__(self,data,fn_s):
         self.author=fn_s[0](data).replace('\n','').replace('\t','')
         self.date=fn_s[1](data)
@@ -71,8 +77,7 @@ class comment_data():
         self.text=fn_s[3](data)
         self.html_id=fn_s[4](data)
     def output(self):
-        r=[self.html_id,self.author,self.date,self.depth,self.text]
-        return r
+        return [self.html_id,self.author,self.date,self.depth,self.text]
 
     
 ##site=[[url,linktest_1],[fn_2,[get_fn1(e1[0],e1[1]),get_fn1(e2[0],e2[1]),get_fn1(e3[0],e3[1]),get_fn1(e4[0],e4[1])]]]
@@ -80,6 +85,7 @@ class comment_data():
 
 
 def multi_selection(text,start,end):
+    # print(str(type(text)))
     r1=text.split(start)
     r1=r1[1:]
     r=[]
@@ -88,12 +94,11 @@ def multi_selection(text,start,end):
     return r
     
 def selection(text,start,end):
+    # print(str(type(text)))
     r=''
     r1=text.split(start,1)
-    if len(r1)==2:
-        r=r1[1].split(end)[0]
-    else:
-        r=""
+    if len(r1)==2: r=r1[1].split(end)[0]
+    else: r=""
     return r
 
 
@@ -101,51 +106,45 @@ def selection(text,start,end):
 
 
 def remove_tags(text):
-    for x in range(len(text)):
-        if text[x]=='>' or text[x]=='<':
-            if text[x]=='>':
-                t=0
-            if text[x]=='<':
-                t=1
-            break
+    # for x in range(len(text)):
+    #     if text[x]=='>' or text[x]=='<':
+    #         if text[x]=='>': t=0
+    #         if text[x]=='<': t=1
+    #         break
     r=""""""
+    # in_tag=False
     t=0
     for x in range(len(text)):
         if text[x]=='>' or text[x]=='<':
-            if text[x]=='>':
-                t=0
-            if text[x]=='<':
-                t=1
-        else:
-            if t==0:
-                r=r+text[x]
+            if text[x]=='>': t=0
+            if text[x]=='<': t=1
+        elif t==0: r=r+text[x]
     return r
 
 
 
 
 def get_post(text):
-    r=1
     s='<article id="post'
     e='</article><!-- #post-## -->'
-    r=selection(text,s,e)
-    return [r]
+    # r=selection(text,s,e)
+    return [selection(text,s,e)]
 
 def get_comments(text):
     r=1
     s='<li class="comment'
     e='<div class="reply">'
-    r=multi_selection(text,s,e)
-    return r
+    # r=multi_selection(text,s,e)
+    return multi_selection(text,s,e)
 
 
 def selection_fn_gen(s,e):
-    r = lambda x: remove_tags(selection(x,s,e))
-    return r
+    # r = lambda x: remove_tags(selection(x,s,e))
+    return lambda x: remove_tags(selection(x,s,e))
 
 def no_tags_selection_fn_gen(s,e):
-    r = lambda x: remove_tags(selection(x,s,e))
-    return r
+    # r = lambda x: remove_tags(selection(x,s,e))
+    return lambda x: remove_tags(selection(x,s,e))
 
 def double_selection_fn_gen(s1,e1,s2,e2):
     r = lambda x: selection(selection(x,s1,e1),s2,e2)
@@ -229,8 +228,8 @@ fns_2=wordpress_functions_post_1
 
 
 # def esr_funtions:
-# parser=site_parser("twig",fns_2,fns_1)
-# parser.full_scan()
+parser=site_parser("Twig",fns_2,fns_1)
+parser.full_scan()
 
 
 # fns_1[0]=no_tags_selection_fn_gen('<div class="comment-author vcard">',

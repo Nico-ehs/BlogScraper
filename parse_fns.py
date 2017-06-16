@@ -61,23 +61,22 @@ def get_post(text):
 
 def get_comments(text):
     # extracts strings with the comment data from the html page
-    r=1
     s='<li class="comment'
     e='<div class="reply">'
-    r=multi_selection(text,s,e)
-    return r
+    return multi_selection(text,s,e)
+
 
 def selection_fn_gen(s,e):
     r = lambda x: remove_tags(selection(x,s,e))
-    return r
+
 
 def no_tags_selection_fn_gen(s,e):
-    r = lambda x: remove_tags(selection(x,s,e))
-    return r
+    return lambda x: remove_tags(selection(x,s,e))
+
 
 def double_selection_fn_gen(s1,e1,s2,e2):
-    r = lambda x: selection(selection(x,s1,e1),s2,e2)
-    return r
+    return lambda x: selection(selection(x,s1,e1),s2,e2)
+
 
 
 # def format_name_ers(fn)
