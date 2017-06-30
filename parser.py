@@ -38,7 +38,7 @@ class site_parser():
             self.scan_page(page)
         # self.save_data()
     def save_data(self):
-        
+        # saves the html pages to files in sitedata folder
         file_fns.save_file("posts.txt",str(self.posts),'/site data/'+self.sitename)
         file_fns.save_file("comments.txt",str(self.comments),'/site data/'+self.sitename)
         
@@ -223,11 +223,14 @@ fns_2=wordpress_functions_post_1
 # open("post_test1.html", "w", encoding='utf-8').write(str(post(get_post(t1),fns_2).output()))
 
 
+    
+    
+    
 
-
-
+print(parse_fns.testv)
 
 # def esr_funtions:
+
 parser=site_parser("Twig",fns_2,fns_1)
 parser.full_scan()
 
